@@ -1,36 +1,66 @@
+import PropTypes from "prop-types";
 import { useState } from "react";
+import "./main.sass";
 
 export default function App() {
-  return (
-    <div>
-      <h1>Fabio</h1>
-      <Step />
-    </div>
-  );
+    const [step, setStep] = useState(0);
+    const [dayStep, setDayStep] = useState(1);
+    const obj = {
+        step,
+        setStep,
+        dayStep,
+        setDayStep,
+    };
+
+    return (
+        <div className="app">
+            <h1>Playing with Dates!</h1>
+            <div className="app__ctn">
+                <Step obj={obj} day={true} text={"Step days"} />
+                <p className="app__ctn__text">{dayStep}</p>
+            </div>
+            <div className="app__ctn">
+                <Step obj={obj} />
+                <p className="app__ctn__text">{step}</p>
+            </div>
+        </div>
+    );
 }
 
-function Step() {
-  const [step, setStep] = useState(0);
+Step.propTypes = {
+    obj: PropTypes.object.isRequired,
+    day: PropTypes.bool,
+    text: PropTypes.string,
+};
 
-  function handleMinus() {
-    if (step > 0) setStep((s) => s - 1);
-  }
+function Step({ obj, day = false, text = "Add days" }) {
+    function handleMinus() {
+        if (day && obj.dayStep > 1) {
+            obj.setDayStep((s) => s - 1);
+            return;
+        }
 
-  function handleAdd() {
-    setStep((s) => s + 1);
-  }
+        if (obj.step >= obj.dayStep) obj.setStep((s) => s - obj.dayStep);
+    }
 
-  return (
-    <div className="step">
-      <button className="step__subtract" onClick={handleMinus}>
-        -
-      </button>
-      <p className="step__text">Step</p>
-      <button className="step__add" onClick={handleAdd}>
-        +
-      </button>
+    function handleAdd() {
+        if (day) {
+            obj.setDayStep((s) => s + 1);
+            return;
+        }
 
-      <p>{step}</p>
-    </div>
-  );
+        obj.setStep((s) => s + obj.dayStep);
+    }
+
+    return (
+        <div className="step">
+            <button className="step__subtract" onClick={handleMinus}>
+                -
+            </button>
+            <p className="step__text">{text}</p>
+            <button className="step__add" onClick={handleAdd}>
+                +
+            </button>
+        </div>
+    );
 }
